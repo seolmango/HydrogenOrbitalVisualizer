@@ -1,8 +1,8 @@
 import sys
 import numpy as np
-from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QComboBox, QLabel, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QComboBox, QLabel, QPushButton, QHBoxLayout, QSlider
+from PyQt5.QtGui import QIcon
 import matplotlib
-from mpl_toolkits.mplot3d import Axes3D  # 3D 그래프를 위한 모듈 추가
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 matplotlib.use('Qt5Agg')
@@ -23,15 +23,15 @@ class MplCanvas(FigureCanvasQTAgg):
         super(MplCanvas, self).__init__(fig)
         self.orbital = Orbital(1, 's', 'none')
 
-    def orbit_update(self, n, shape, direction):
+    def orbit_update(self, n, shape, direction, precision):
         self.orbital.change_wave(n, shape, direction)
-        self.draw_wave(scale=n)
+        self.draw_wave(scale=n, precision=precision)
 
-    def draw_wave(self, scale):
+    def draw_wave(self, scale, precision):
         result = []
-        x = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 30)
-        y = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 30)
-        z = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 30)
+        x = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, precision)
+        y = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, precision)
+        z = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, precision)
 
         X = []
         Y = []
@@ -100,27 +100,45 @@ class Main(QDialog):
                 self.m_combo.addItems(["z^2", "xz", "yz", "xy", "x^2-y^2"])
         self.n_combo.currentIndexChanged.connect(l_combo_reset)
         self.l_combo.currentIndexChanged.connect(m_combo_reset)
-        nml_layout.addWidget(QLabel("n:"))
+        nml_layout.addWidget(QLabel("n(주양자수):"))
         nml_layout.addWidget(self.n_combo)
-        nml_layout.addWidget(QLabel("l:"))
+        nml_layout.addWidget(QLabel("l(부양자수):"))
         nml_layout.addWidget(self.l_combo)
-        nml_layout.addWidget(QLabel("ori:"))
+        nml_layout.addWidget(QLabel("orientation(배향):"))
         nml_layout.addWidget(self.m_combo)
         redraw_button = QPushButton("Redraw")
         def redraw():
             redraw_button.setEnabled(False)
-            self.sc.orbit_update(int(self.n_combo.currentText()), self.l_combo.currentText(), self.m_combo.currentText())
+            self.sc.orbit_update(int(self.n_combo.currentText()), self.l_combo.currentText(), self.m_combo.currentText(), self.scale_slider.value())
             redraw_button.setEnabled(True)
         redraw_button.clicked.connect(redraw)
         nml_layout.addWidget(redraw_button)
 
+        slider_layout = QHBoxLayout()
+        self.scale_slider = QSlider()
+        self.scale_slider.setRange(10, 50)
+        self.scale_slider.setValue(20)
+        self.scale_slider.setOrientation(1)
+        scale_label = QLabel("Precision(정밀도):")
+        value_label = QLabel(str(self.scale_slider.value()))
+        slider_layout.addWidget(scale_label)
+        slider_layout.addWidget(self.scale_slider)
+        slider_layout.addWidget(value_label)
+
+        def scale_change():
+            value_label.setText(str(self.scale_slider.value()))
+
+        self.scale_slider.valueChanged.connect(scale_change)
+
         layout = QVBoxLayout()
         layout.addLayout(nml_layout)
+        layout.addLayout(slider_layout)
         layout.addWidget(toolbar)
         layout.addWidget(self.sc)
         self.setLayout(layout)
-        self.setWindowTitle("Orbital Viewer")
-        self.sc.orbit_update(int(self.n_combo.currentText()), self.l_combo.currentText(), self.m_combo.currentText())
+        self.setWindowTitle("Hydrogen Orbital Visualizer")
+        self.setWindowIcon(QIcon('./asset/icon.png'))
+        self.sc.orbit_update(int(self.n_combo.currentText()), self.l_combo.currentText(), self.m_combo.currentText(), self.scale_slider.value())
         self.show()
 
 
