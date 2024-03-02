@@ -137,7 +137,7 @@ class Main(QDialog):
         layout.addWidget(self.sc)
         self.setLayout(layout)
         self.setWindowTitle("Hydrogen Orbital Visualizer")
-        self.setWindowIcon(QIcon('./asset/icon.png'))
+        self.setWindowIcon(QIcon('icon.png'))
         self.sc.orbit_update(int(self.n_combo.currentText()), self.l_combo.currentText(), self.m_combo.currentText(), self.scale_slider.value())
         self.show()
 
