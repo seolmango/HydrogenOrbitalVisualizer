@@ -53,7 +53,7 @@ class MplCanvas(FigureCanvasQTAgg):
         result = np.array(result)
         result = result / result.sum()
 
-        valid = np.where(result > 0.7 * result.mean())
+        valid = np.where(result > 0.1 * result.mean())
         X = X[valid]
         Y = Y[valid]
         Z = Z[valid]

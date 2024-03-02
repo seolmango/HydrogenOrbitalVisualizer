@@ -50,3 +50,11 @@ $N^{2} \int^{\infty }_{- \infty} \psi \times \psi = 1$
 파동함수를 이용하여 각 지점에서 전자의 존재 확률을 시각화하고 있습니다.
 
 다양한 오비탈의 모양을 직접 눈으로 확인해보세요!
+
+## 기타
+
+exe 빌드 명령어
+
+```bash
+pyinstaller "Hydrogen Orbital Visualizer.spec"
+```
