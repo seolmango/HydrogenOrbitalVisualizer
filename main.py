@@ -10,7 +10,7 @@ from Orbital import Orbital
 from WaveFunction import FIRST_BOHR_RADIUS
 import matplotlib.pylab as pl
 from matplotlib.colors import ListedColormap
-cmap = pl.cm.viridis
+cmap = pl.cm.plasma
 my_cmap = cmap(np.arange(cmap.N))
 my_cmap[:,-1] = np.linspace(0, 1, cmap.N)
 my_cmap = ListedColormap(my_cmap)
@@ -29,9 +29,9 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def draw_wave(self, scale):
         result = []
-        x = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 20)
-        y = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 20)
-        z = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 20)
+        x = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 30)
+        y = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 30)
+        z = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, 30)
 
         X = []
         Y = []
@@ -47,7 +47,17 @@ class MplCanvas(FigureCanvasQTAgg):
                     X.append(x[i])
                     Y.append(y[j])
                     Z.append(z[k])
+        X = np.array(X)
+        Y = np.array(Y)
+        Z = np.array(Z)
+        result = np.array(result)
+        result = result / result.sum()
 
+        valid = np.where(result > 0.7 * result.mean())
+        X = X[valid]
+        Y = Y[valid]
+        Z = Z[valid]
+        result = result[valid]
 
         self.axes.clear()
         self.axes.scatter(X, Y, Z, c=result, cmap=my_cmap)
@@ -67,7 +77,7 @@ class Main(QDialog):
 
         nml_layout = QHBoxLayout()
         self.n_combo = QComboBox()
-        self.n_combo.addItems(["1", "2"])
+        self.n_combo.addItems(["1", "2", "3"])
         self.l_combo = QComboBox()
         self.l_combo.addItems(["s"])
         def l_combo_reset():
@@ -76,6 +86,8 @@ class Main(QDialog):
                 self.l_combo.addItems(["s"])
             elif self.n_combo.currentText() == "2":
                 self.l_combo.addItems(["s", "p"])
+            elif self.n_combo.currentText() == "3":
+                self.l_combo.addItems(["s", "p", "d"])
         self.m_combo = QComboBox()
         self.m_combo.addItems(["none"])
         def m_combo_reset():
@@ -84,6 +96,8 @@ class Main(QDialog):
                 self.m_combo.addItems(["none"])
             elif self.l_combo.currentText() == "p":
                 self.m_combo.addItems(["x", "y", "z"])
+            elif self.l_combo.currentText() == "d":
+                self.m_combo.addItems(["z^2", "xz", "yz", "xy", "x^2-y^2"])
         self.n_combo.currentIndexChanged.connect(l_combo_reset)
         self.l_combo.currentIndexChanged.connect(m_combo_reset)
         nml_layout.addWidget(QLabel("n:"))

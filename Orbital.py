@@ -1,4 +1,4 @@
-from WaveFunction import FIRST_BOHR_RADIUS, oneS, twoS, twoPz, twoPx, twoPy
+from WaveFunction import FIRST_BOHR_RADIUS, oneS, twoS, twoPz, twoPx, twoPy, threeS, threePx, threePy, threePz, threeDz2, threeDxz, threeDyz, threeDxy, threeDx2y2
 
 class Orbital:
     def __init__(self, n: int, shape: str, direction: str):
@@ -26,4 +26,23 @@ class Orbital:
                 return twoPx
             elif shape == 'p' and direction == 'y':
                 return twoPy
+        elif n == 3:
+            if shape == 's' and direction == 'none':
+                return threeS
+            elif shape == 'p' and direction == 'x':
+                return threePx
+            elif shape == 'p' and direction == 'y':
+                return threePy
+            elif shape == 'p' and direction == 'z':
+                return threePz
+            elif shape == 'd' and direction == 'z^2':
+                return threeDz2
+            elif shape == 'd' and direction == 'xz':
+                return threeDxz
+            elif shape == 'd' and direction == 'yz':
+                return threeDyz
+            elif shape == 'd' and direction == 'xy':
+                return threeDxy
+            elif shape == 'd' and direction == 'x^2-y^2':
+                return threeDx2y2
         raise ValueError(f"No wave function for n={n}, shape={shape}, direction={direction}")
