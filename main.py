@@ -29,9 +29,10 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def draw_wave(self, scale, precision):
         result = []
-        x = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, precision)
-        y = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, precision)
-        z = np.linspace(-5 * FIRST_BOHR_RADIUS * scale, 5 * FIRST_BOHR_RADIUS * scale, precision)
+        limit = (-6 * FIRST_BOHR_RADIUS * scale, 6 * FIRST_BOHR_RADIUS * scale)
+        x = np.linspace(-6 * FIRST_BOHR_RADIUS * scale, 6 * FIRST_BOHR_RADIUS * scale, precision)
+        y = np.linspace(-6 * FIRST_BOHR_RADIUS * scale, 6 * FIRST_BOHR_RADIUS * scale, precision)
+        z = np.linspace(-6 * FIRST_BOHR_RADIUS * scale, 6 * FIRST_BOHR_RADIUS * scale, precision)
 
         X = []
         Y = []
@@ -60,6 +61,7 @@ class MplCanvas(FigureCanvasQTAgg):
         result = result[valid]
 
         self.axes.clear()
+        self.axes.set(xlim3d=limit, ylim3d=limit, zlim3d=limit, box_aspect=(1,1,1))
         self.axes.scatter(X, Y, Z, c=result, cmap=my_cmap)
         self.axes.set_xlabel('X')
         self.axes.set_ylabel('Y')
@@ -77,7 +79,7 @@ class Main(QDialog):
 
         nml_layout = QHBoxLayout()
         self.n_combo = QComboBox()
-        self.n_combo.addItems(["1", "2", "3"])
+        self.n_combo.addItems(["1", "2", "3", "4"])
         self.l_combo = QComboBox()
         self.l_combo.addItems(["s"])
         def l_combo_reset():
@@ -88,6 +90,8 @@ class Main(QDialog):
                 self.l_combo.addItems(["s", "p"])
             elif self.n_combo.currentText() == "3":
                 self.l_combo.addItems(["s", "p", "d"])
+            elif self.n_combo.currentText() == "4":
+                self.l_combo.addItems(["s", "p", "d", "f"])
         self.m_combo = QComboBox()
         self.m_combo.addItems(["none"])
         def m_combo_reset():
@@ -98,6 +102,8 @@ class Main(QDialog):
                 self.m_combo.addItems(["x", "y", "z"])
             elif self.l_combo.currentText() == "d":
                 self.m_combo.addItems(["z^2", "xz", "yz", "xy", "x^2-y^2"])
+            elif self.l_combo.currentText() == "f":
+                self.m_combo.addItems(["z^3", "xz^2", "yz^2", "xyz", "z(x^2-y^2)", "x(x^2-3y^2)", "y(3x^2-y^2)"])
         self.n_combo.currentIndexChanged.connect(l_combo_reset)
         self.l_combo.currentIndexChanged.connect(m_combo_reset)
         nml_layout.addWidget(QLabel("n(주양자수):"))
